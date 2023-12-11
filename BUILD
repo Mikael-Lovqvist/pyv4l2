@@ -1,4 +1,4 @@
 $ python setup.py --use-cython build
-$ pip install --user -e .
+$ pip install --user --break-system-packages -e .
 
 
