@@ -40,24 +40,27 @@ cdef class Control:
         }
  
         while (0 == xioctl(self.fd, VIDIOC_QUERYCTRL, & queryctrl)):
-            control = {}  
-            control['name'] = queryctrl.name
-            control['type'] = control_type[queryctrl.type]
-            control['id'] = queryctrl.id
-            control['min'] = queryctrl.minimum
-            control['max'] = queryctrl.maximum
-            control['step'] = queryctrl.step
-            control['default'] = queryctrl.default_value
-            control['value'] = self.get_control_value(queryctrl.id)
-            if queryctrl.flags & V4L2_CTRL_FLAG_DISABLED:
-                control['disabled'] = True
+            if queryctrl.type in control_type:
+                control = {}  
+                control['name'] = queryctrl.name
+                control['type'] = control_type[queryctrl.type]
+                control['id'] = queryctrl.id
+                control['min'] = queryctrl.minimum
+                control['max'] = queryctrl.maximum
+                control['step'] = queryctrl.step
+                control['default'] = queryctrl.default_value
+                control['value'] = self.get_control_value(queryctrl.id)
+                if queryctrl.flags & V4L2_CTRL_FLAG_DISABLED:
+                    control['disabled'] = True
+                else:
+                    control['disabled'] = False
+ 
+                    if queryctrl.type == V4L2_CTRL_TYPE_MENU:
+                        control['menu'] = self.enumerate_menu(queryctrl)
+ 
+                controls.append(control)
             else:
-                control['disabled'] = False
- 
-                if queryctrl.type == V4L2_CTRL_TYPE_MENU:
-                    control['menu'] = self.enumerate_menu(queryctrl)
- 
-            controls.append(control)
+                print(f'Warning, unknown type: {queryctrl.type}')
  
             queryctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL
  

@@ -32,7 +32,7 @@ extensions = [
 
 if USE_CYTHON:
     from Cython.Build import cythonize
-    extensions = cythonize(extensions)
+    extensions = cythonize(extensions, include_path=['pyv4l2'])
 
 setup(
     name='pyv4l2',
